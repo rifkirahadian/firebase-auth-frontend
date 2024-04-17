@@ -2,22 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 export default function Signup() {
   const router = useRouter();
-  const firebaseConfig = {
-    apiKey: "AIzaSyCzwfvF71ii36Qpr0C5cDaAnEmdA2Fk_G4",
-    authDomain: "nest-auth-firebase-2825a.firebaseapp.com",
-    projectId: "nest-auth-firebase-2825a",
-    storageBucket: "nest-auth-firebase-2825a.appspot.com",
-    messagingSenderId: "808372221064",
-    appId: "1:808372221064:web:2fa3b6c6df709cfd3c9b3d"
-  };
-  
-  initializeApp(firebaseConfig);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

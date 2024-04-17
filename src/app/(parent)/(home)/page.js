@@ -1,11 +1,13 @@
 'use client';
 
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 
 export default function Home({ page }) {
   const [nav, setNav] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const links = [
     {
@@ -17,6 +19,34 @@ export default function Home({ page }) {
       title: "Register",
     }
   ];
+
+  const getAuthUser = async() => {
+    const auth = await getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        setCurrentUser(user);
+        console.log("User is signed in:", user);
+      } else {
+        // User is signed out
+        setCurrentUser(null);
+        console.log("User is signed out");
+      }
+    });
+  };
+
+  const onLogout = () => {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      window.location.reload();
+    }).catch((error) => {
+      alert(error.message);
+    });
+  };
+
+  useEffect(() => {
+    getAuthUser();
+  }, []);
 
   return (
     <div className="flex justify-between items-center w-full h-20 px-4 text-white bg-black fixed nav">
@@ -35,14 +65,28 @@ export default function Home({ page }) {
       </div>
 
       <ul className="hidden md:flex">
-        {links.map(({ title, link }, key) => (
-          <li
-            key={key}
-            className="nav-links px-4 cursor-pointer capitalize font-medium text-gray-500 hover:scale-105 hover:text-white duration-200 link-underline"
-          >
-            <Link href={link}>{title}</Link>
-          </li>
-        ))}
+        {currentUser === null && 
+          links.map(({ title, link }, key) => (
+            <li
+              key={key}
+              className="nav-links px-4 cursor-pointer capitalize font-medium text-gray-500 hover:scale-105 hover:text-white duration-200 link-underline"
+            >
+              <Link href={link}>{title}</Link>
+            </li>
+          ))
+        }
+        
+        {currentUser !== null && (
+          <>
+            {currentUser.email}
+            <li
+              className="nav-links px-4 cursor-pointer capitalize font-medium text-gray-500 hover:scale-105 hover:text-white duration-200 link-underline"
+              onClick={onLogout}
+            >
+              Logout
+            </li>
+          </>
+        )}
       </ul>
 
       <div
