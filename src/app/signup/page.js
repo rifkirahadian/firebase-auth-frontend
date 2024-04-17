@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+  const router = useRouter();
   const firebaseConfig = {
     apiKey: "AIzaSyCzwfvF71ii36Qpr0C5cDaAnEmdA2Fk_G4",
     authDomain: "nest-auth-firebase-2825a.firebaseapp.com",
@@ -17,20 +19,20 @@ export default function Signup() {
   
   initializeApp(firebaseConfig);
   
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ username, password });
+    console.log({ email, password });
 
     const auth = getAuth();
-    createUserWithEmailAndPassword(auth, username, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed up 
         const user = userCredential.user;
         console.log({ user: user.reloadUserInfo });
-        // ...
+
+        router.push('/login');
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -62,13 +64,13 @@ export default function Signup() {
               htmlFor="email"
               className="block text-sm font-semibold text-gray-800"
             >
-              Username
+              Email
             </label>
             <input
               required
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md focus:border-gray-400 focus:ring-gray-300 focus:outline-none focus:ring focus:ring-opacity-40"
             />
           </div>
