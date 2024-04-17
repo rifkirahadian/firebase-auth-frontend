@@ -13,6 +13,7 @@ COPY --from=builder /my-space/package-lock.json .
 COPY --from=builder /my-space/next.config.mjs ./
 COPY --from=builder /my-space/public ./public
 COPY --from=builder /my-space/.next ./
-COPY --from=builder /my-space/.next/static ./.next/static
+COPY --from=builder /my-space/.next/standalone ./
+COPY --from=builder /my-space/.next/ ./.next/
 EXPOSE 3001
-ENTRYPOINT ["npm", "start", "-p", "3001"]
+ENTRYPOINT ["npm", "start", "-p", "3000"]
