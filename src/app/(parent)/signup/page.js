@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { register } from "@/services/api/auth";
 
 export default function Signup() {
   const router = useRouter();
@@ -11,16 +12,28 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const saveUser = async (password, uid) => {
+    const { isError, error } = await register({
+      username: email,
+      password,
+      uid,
+    });
+
+    if (isError) {
+      alert(error);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ email, password });
 
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
-        console.log({ user: user.reloadUserInfo });
-
+        const { uid, reloadUserInfo: { passwordHash } } = user;
+        await saveUser(passwordHash, uid);
         router.push('/login');
       })
       .catch((error) => {
