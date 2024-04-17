@@ -1,11 +1,18 @@
-FROM node:18
+FROM node:18-alpine as builder
+WORKDIR /my-space
 
-WORKDIR /app
-
-COPY package.json ./
-
-RUN npm install --loglevel=info
-
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
+RUN npm run build
 
-CMD ["npx", "next", "dev", "-p", "3001"]
+FROM node:18-alpine as runner
+WORKDIR /my-space
+COPY --from=builder /my-space/package.json .
+COPY --from=builder /my-space/package-lock.json .
+COPY --from=builder /my-space/next.config.mjs ./
+COPY --from=builder /my-space/public ./public
+COPY --from=builder /my-space/.next ./
+COPY --from=builder /my-space/.next/static ./.next/static
+EXPOSE 3001
+ENTRYPOINT ["npm", "start", "-p", "3001"]
