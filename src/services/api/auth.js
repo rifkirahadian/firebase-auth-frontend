@@ -14,4 +14,18 @@ const register = async (data) => {
   return { data: response, isError, error };
 }
 
-export { register }
+const putLastLogin = async (data) => {
+  const {
+    data: response,
+    isError,
+    error,
+  } = await axiosRequest({
+    url: `${process.env.NEXT_PUBLIC_API_HOST}/auth/last-login`,
+    method: 'PUT',
+    data,
+  });
+
+  return { data: response, isError, error };
+}
+
+export { register, putLastLogin }

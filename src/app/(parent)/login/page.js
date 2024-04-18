@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { putLastLogin } from "@/services/api/auth";
 
 export default function Login() {
   const router = useRouter();
@@ -14,10 +15,12 @@ export default function Login() {
     e.preventDefault();
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         // Signed in 
         const user = userCredential.user;
-        console.log({ user });
+        await putLastLogin({
+          uid: user.uid,
+        });
         
         router.push('/');
       })
